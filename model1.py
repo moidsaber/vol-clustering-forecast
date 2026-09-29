@@ -80,7 +80,6 @@ print(f"test MSE 20-day average   : {test_avg:.4f}")
 print(f"test MSE MLP              : {test_mlp:.4f}")
 print(f"MLP / 20-day average      : {test_mlp / test_avg:.3f}  (below 1 means the MLP wins)")
 
-# ----- Plot: forecasts vs realised, full test period plus a zoom ---------
 test_dates = dates[test]
 fig, axes = plt.subplots(2, 1, figsize=(11, 7))
 for ax in axes:
@@ -95,3 +94,10 @@ axes[1].set_title("Zoom: the April 2025 tariff shock")
 plt.tight_layout()
 plt.savefig("forecast_vs_realised.png", dpi=150)
 plt.show()
+
+print(f"\nMSE reduction vs 20-day average: {100 * (1 - test_mlp / test_avg):.1f}%")
+
+keep = (dates[test] < "2025-04-01") | (dates[test] >= "2025-06-01")
+ex_mlp = np.mean((pred_mlp[keep] - y_t[keep]) ** 2)
+ex_avg = np.mean((pred_avg[keep] - y_t[keep]) ** 2)
+print(f"Same, excluding Apr-May 2025: {100 * (1 - ex_mlp / ex_avg):.1f}%")
